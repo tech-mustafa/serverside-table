@@ -8,6 +8,7 @@ import _ from "lodash";
 export const DynamicTable = (props) => {
   const [visible, setVisible] = useState(false);
   const [listData, setListData] = useState([]);
+  // const [sorterInfo, setsorterInfo] = useState(null);
   const showDrawer = () => {
     setVisible(true);
   };
@@ -15,6 +16,7 @@ export const DynamicTable = (props) => {
     setVisible(false);
   };
   const [fields, setFields] = useState();
+  // const [headers, setHeaders] = useState()
 
   useEffect(() => {
     const tempFields = [];
@@ -26,6 +28,7 @@ export const DynamicTable = (props) => {
       });
     });
     setFields(tempFields);
+  
   }, [props.columns]);
 
   useEffect(() => {
@@ -36,13 +39,24 @@ export const DynamicTable = (props) => {
     let filteredData = [...props.list];
     _.map(values, (value, key) => {
       if (value) {
-        const tempData = filteredData.filter((data) => data[key] === value);
+        // eslint-disable-next-line eqeqeq
+        const tempData = filteredData.filter((data) => data[key] == value);
         filteredData = [...tempData];
       }
     });
     setListData(filteredData);
     onClose();
   };
+  const [currPage, setcurrPage] = useState(1);
+  const [pageSize, setpageSize] = useState(25);
+
+  const onTableChange = (pagination, sorter) => {
+    console.log('pagination: ', pagination);
+    console.log('sorter: ', sorter);
+    // setsorterInfo(sorter);
+    // console.log('sorterInfo: ', sorterInfo);
+    // console.log("headers: ",headers);
+  }
 
   return (
     <div style={{ margin: 50 }}>
@@ -66,7 +80,19 @@ export const DynamicTable = (props) => {
         <DynamicForm data={fields} onSubmit={onFilter} />
       </Drawer>
       <br />
-      <Table columns={props.columns} dataSource={listData} rowKey="sno" />
+      <Table
+        columns={props.columns}
+        dataSource={listData}
+        rowKey="sno"
+        onChange={onTableChange}
+        pagination={{
+          current: currPage,
+          pageSize: pageSize,
+          onChange: (currPage, pageSize) => {
+            setcurrPage(currPage);
+            setpageSize(pageSize);
+          }
+        }} />
     </div>
   );
 };
