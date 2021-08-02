@@ -1,8 +1,6 @@
-import React from 'react';
-import { DynamicTable } from './components/DynamicTable';
-import list from "./utils/TempData.json"
-// import { DynamicForm } from "./components/DynamicForm";
-
+import React from "react";
+import { DynamicTable } from "./components/DynamicTable";
+import list from "./utils/TempData.json";
 
 const columns = [
   {
@@ -10,44 +8,51 @@ const columns = [
     dataIndex: "id",
     dataIndexForSort: "id",
     fieldType: "number",
-    sorter:true,
+    sorter: true,
   },
   {
     title: "User Name",
     dataIndex: "name",
     dataIndexForSort: "name",
     fieldType: "text",
-    sorter:true
+    sorter: true,
   },
   {
     title: "Post ID",
     dataIndex: "postId",
     dataIndexForSort: "postId",
     fieldType: "number",
-    sorter:true
+    sorter: true,
   },
   {
     title: "E-Mail",
     dataIndex: "email",
     dataIndexForSort: "email",
     fieldType: "text",
-    sorter:true
+    sorter: true,
   },
   {
     title: "Comment",
     dataIndex: "body",
     dataIndexForSort: "body",
     fieldType: "text",
-    sorter:true
-  }
-]
+    sorter: true,
+  },
+];
 
 function App() {
-
   return (
     <div className="App">
-      {/* <DynamicForm data={orgDetails} /> */}
-      {list && <DynamicTable columns={columns} list={list.data} />}
+      <DynamicTable
+        columns={columns}
+        list={list.data} //or
+        apiEndpoint={""}
+        headers={{}}
+        filter={true} //or false
+        pagination={true} // or false
+        serverFilter={true} //or false
+        serverPagination={true} // or false
+      />
     </div>
   );
 }

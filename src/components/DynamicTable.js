@@ -8,14 +8,16 @@ import _ from "lodash";
 export const DynamicTable = (props) => {
   const [visible, setVisible] = useState(false);
   const [listData, setListData] = useState([]);
-  // const [sorterInfo, setsorterInfo] = useState(null);
+  const [currPage, setcurrPage] = useState(1);
+  const [pageSize, setpageSize] = useState(25);
+  const [fields, setFields] = useState();
+
   const showDrawer = () => {
     setVisible(true);
   };
   const onClose = () => {
     setVisible(false);
   };
-  const [fields, setFields] = useState();
   // const [headers, setHeaders] = useState()
 
   useEffect(() => {
@@ -46,8 +48,6 @@ export const DynamicTable = (props) => {
     setListData(filteredData);
     onClose();
   };
-  const [currPage, setcurrPage] = useState(1);
-  const [pageSize, setpageSize] = useState(25);
 
   const onTableChange = (pagination, filter, sorter) => {
     setcurrPage(pagination.current);
@@ -84,7 +84,10 @@ export const DynamicTable = (props) => {
         onChange={onTableChange}
         pagination={{
           current: currPage,
-          pageSize: pageSize         
+          pageSize: pageSize,
+          offset: 0,
+          limit: 25,
+          total: 300
         }}
       />
     </div>
