@@ -28,7 +28,6 @@ export const DynamicTable = (props) => {
       });
     });
     setFields(tempFields);
-  
   }, [props.columns]);
 
   useEffect(() => {
@@ -50,13 +49,11 @@ export const DynamicTable = (props) => {
   const [currPage, setcurrPage] = useState(1);
   const [pageSize, setpageSize] = useState(25);
 
-  const onTableChange = (pagination, sorter) => {
-    console.log('pagination: ', pagination);
-    console.log('sorter: ', sorter);
-    // setsorterInfo(sorter);
-    // console.log('sorterInfo: ', sorterInfo);
-    // console.log("headers: ",headers);
-  }
+  const onTableChange = (pagination, filter, sorter) => {
+    setcurrPage(pagination.current);
+    setpageSize(pagination.pageSize);
+    console.log("sorter: ", sorter);
+  };
 
   return (
     <div style={{ margin: 50 }}>
@@ -87,12 +84,9 @@ export const DynamicTable = (props) => {
         onChange={onTableChange}
         pagination={{
           current: currPage,
-          pageSize: pageSize,
-          onChange: (currPage, pageSize) => {
-            setcurrPage(currPage);
-            setpageSize(pageSize);
-          }
-        }} />
+          pageSize: pageSize         
+        }}
+      />
     </div>
   );
 };
