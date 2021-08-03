@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import "antd/dist/antd.css";
 import { Button, Drawer, Table, Tooltip } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import { useDispatch, useSelector } from "react-redux";
 import { DynamicForm } from "./DynamicForm";
+import action from "../store/Actions"
 import _ from "lodash";
 
 export const DynamicTable = (props) => {
@@ -11,14 +13,22 @@ export const DynamicTable = (props) => {
   const [currPage, setcurrPage] = useState(1);
   const [pageSize, setpageSize] = useState(25);
   const [fields, setFields] = useState();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(action.getList());
+  }, [dispatch])
+
+  const list = useSelector(state => state.getList.list.list);
+  const loading = useSelector(state => state.getUsers.loading);
 
   const showDrawer = () => {
     setVisible(true);
   };
+
   const onClose = () => {
     setVisible(false);
   };
-  // const [headers, setHeaders] = useState()
 
   useEffect(() => {
     const tempFields = [];
@@ -33,11 +43,12 @@ export const DynamicTable = (props) => {
   }, [props.columns]);
 
   useEffect(() => {
-    setListData(props.list);
-  }, [props.list]);
+    list && setListData(list);
+  }, [list]);
 
   const onFilter = (values) => {
-    let filteredData = [...props.list];
+    if (props.filter === true){
+      let filteredData = [...list];
     _.map(values, (value, key) => {
       if (value) {
         // eslint-disable-next-line eqeqeq
@@ -46,7 +57,7 @@ export const DynamicTable = (props) => {
       }
     });
     setListData(filteredData);
-    onClose();
+    onClose();}
   };
 
   const onTableChange = (pagination, filter, sorter) => {
@@ -57,19 +68,13 @@ export const DynamicTable = (props) => {
 
   return (
     <div style={{ margin: 50 }}>
-      <Tooltip title="search">
-        <Button
-          type="primary"
-          shape="circle"
-          icon={<SearchOutlined />}
-          onClick={showDrawer}
-          style={{ float: "right", marginBottom: 10 }}
-        />
+      <Tooltip title="Search">
+        <Button type="primary" shape="circle" icon={<SearchOutlined />} onClick={showDrawer} style={{ float: "right", marginBottom: 10 }} />
       </Tooltip>
       <Drawer
         title="Search"
         placement="right"
-        closable={false}
+        closable={true}
         onClose={onClose}
         visible={visible}
         width="30%"
@@ -80,9 +85,10 @@ export const DynamicTable = (props) => {
       <Table
         columns={props.columns}
         dataSource={listData}
+        loading={loading}
         rowKey="sno"
         onChange={onTableChange}
-        pagination={{
+        pagination={ props.pagination && {
           current: currPage,
           pageSize: pageSize,
           offset: 0,

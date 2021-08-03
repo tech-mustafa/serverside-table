@@ -49,7 +49,7 @@ function App() {
         apiEndpoint={""}
         headers={{}}
         filter={true} //or false
-        pagination={true} // or false
+        pagination={false} // or false
         serverFilter={true} //or false
         serverPagination={true} // or false
       />

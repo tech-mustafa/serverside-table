@@ -1,32 +1,32 @@
 import {
-    GET_ITEMS_SUCCESS,
-    GET_ITEMS_FAILED,
-    GET_ITEMS_REQUESTED
+    GET_LIST_SUCCESS,
+    GET_LIST_FAILED,
+    GET_LIST_REQUESTED
 } from './Action';
 
 const initialState = {
-    itemMaster: [],
+    list: [],
     loading: false,
 };
 
 const reducer = (state = initialState, action) => {
     // console.log("stataInitialData: ", state);
     switch (action.type) {
-        case GET_ITEMS_REQUESTED:
-            //console.log('In GetItemsRequested: ', payload);
+        case GET_LIST_REQUESTED:
+            //console.log('In GetLISTRequested: ', payload);
             return ({
                 ...state,
                 loading: true,
             });
-        case GET_ITEMS_SUCCESS:
-            //console.log('In GetItemsSuccess: ', payload);
+        case GET_LIST_SUCCESS:
+            //console.log('In GetLISTSuccess: ', payload);
             return ({
                 ...state,
-                itemMaster: action.payload,
+                list: action.payload,
                 loading: false,
             });
-        case GET_ITEMS_FAILED:
-            //console.log('In GetItemsFailed: ', payload);
+        case GET_LIST_FAILED:
+            //console.log('In GetLISTFailed: ', payload);
             return ({
                 ...state,
                 loading: false,
