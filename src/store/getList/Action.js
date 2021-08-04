@@ -4,9 +4,10 @@ export const GET_LIST_FAILED = 'GET_LIST_FAILED';
 export const GET_LIST_REQUESTED = 'GET_LIST_REQUESTED';
 
 //Initiator
-export const getList = () => ({
+export const getList = (apiEndPoint, headers) => ({
     type: GET_LIST_REQUESTED,
-    // [WAIT_FOR_ACTION]: GET_LIST_SUCCESS,
+    apiEndPoint,
+    headers
 }
 );
 
