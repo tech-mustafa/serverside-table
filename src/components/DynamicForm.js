@@ -43,6 +43,7 @@ export const DynamicForm = (props) => {
                     >
                         <Input
                             type={field.type}
+                            allowClear
                         />
                     </Form.Item>
                 );
@@ -61,6 +62,7 @@ export const DynamicForm = (props) => {
                     >
                         <DatePicker
                             format={'DD/MM/YYYY'}
+                            allowClear
                         // onChange={getDate}
                         />
                     </Form.Item>
@@ -81,6 +83,7 @@ export const DynamicForm = (props) => {
                             defaultValue={field.initialValue}
                             min="1"
                             max="120"
+                            allowClear
                             style={{ width: "100%" }}
                         />
                     </Form.Item>
@@ -104,6 +107,7 @@ export const DynamicForm = (props) => {
                         <Input
                             min="0"
                             maxLength={field.maxLen}
+                            allowClear
                             style={{ width: "100%" }}
                         />
                     </Form.Item>
@@ -135,6 +139,7 @@ export const DynamicForm = (props) => {
                     >
                         <Input
                             min="0"
+                            allowClear
                             maxLength={field.maxLen}
                             style={{ width: "100%" }}
                         />
@@ -196,6 +201,7 @@ export const DynamicForm = (props) => {
                         <Input
                             type={field.type}
                             prefix={field.countryCode}
+                            allowClear
                             minLength="10"
                             maxLength="10"
                         />
@@ -218,7 +224,9 @@ export const DynamicForm = (props) => {
                             },
                         ]}
                     >
-                        <Input />
+                        <Input
+                            allowClear
+                        />
                     </Form.Item>
                 );
             case "upload":
@@ -274,6 +282,10 @@ export const DynamicForm = (props) => {
         console.log('Received values of form: ', values);
     };
 
+    const onReset = () => {
+        form.resetFields();
+      };
+
     return (
         <div >
             <Form
@@ -296,6 +308,10 @@ export const DynamicForm = (props) => {
                 <Form.Item style={{ textAlign: "center" }}>
                     <Button type="primary" htmlType="submit">
                         Submit
+                    </Button>
+                    &emsp;
+                    <Button type="primary" htmlType="reset" onClick={onReset}>
+                        Reset
                     </Button>
                 </Form.Item>
             </Form>

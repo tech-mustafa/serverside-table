@@ -12,12 +12,12 @@ function getApi(api, header) {
       .catch((error) => { throw error })
 }
 
-function* fetchList({apiEndPoint, headers}) {
+function* fetchList({ apiEndPoint, headers }) {
    try {
       const list = yield call(getApi, apiEndPoint, headers);
       console.log('apiEndPoint: ', apiEndPoint);
-      console.log("listSaga fetchList: ", list);
-      const data = list.success.data;
+      // console.log("listSaga fetchList: ", list);
+      const data = list.success;
       yield put(getListDispatcher({ data }));
    } catch (e) {
       yield put(getListDispatcher({}));

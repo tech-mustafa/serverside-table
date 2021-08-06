@@ -6,6 +6,7 @@ import {
 
 const initialState = {
     list: [],
+    meta: [],
     loading: false,
 };
 
@@ -19,10 +20,11 @@ const reducer = (state = initialState, action) => {
                 loading: true,
             });
         case GET_LIST_SUCCESS:
-            //console.log('In GetLISTSuccess: ', payload);
+            // console.log('In GetLISTSuccess: ', action.payload);
             return ({
                 ...state,
-                list: action.payload,
+                list: action.payload.data.data,
+                meta: action.payload.data.meta,
                 loading: false,
             });
         case GET_LIST_FAILED:
