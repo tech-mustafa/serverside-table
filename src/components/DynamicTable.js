@@ -48,22 +48,26 @@ export const DynamicTable = (props) => {
       });
     });
     setFields(tempFields);
-    if (props.sorter) {
-      const tempColumns = [];
-      props.columns.map((col, i) => {
-        if (col.sorter) {
-          return tempColumns.push({
-            title: col.title,
-            dataIndex: col.dataIndex,
-            fieldType: col.fieldType,
-            sorter: (col.fieldType === "number") ?
-              (a, b) => a[col.dataIndex] - b[col.dataIndex] :
-              (a, b) => a[col.dataIndex].length - b[col.dataIndex].length
-          });
-        }else return null;
-      });
-      setColumnsData(tempColumns);
-    }
+    const tempColumns = [];
+    props.columns.map((col, i) => {
+      if (col.sorter) {
+        return tempColumns.push({
+          title: col.title,
+          dataIndex: col.dataIndex,
+          fieldType: col.fieldType,
+          sorter: (col.fieldType === "number") ?
+            (a, b) => a[col.dataIndex] - b[col.dataIndex] :
+            (a, b) => a[col.dataIndex].length - b[col.dataIndex].length
+        });
+      } else {
+        return tempColumns.push({
+          title: col.title,
+          dataIndex: col.dataIndex,
+          fieldType: col.fieldType,
+        });
+      }
+    });
+    setColumnsData(tempColumns);
   }, [props.columns, props.sorter]);
 
   //Fetch List from Server Setup to State
@@ -144,6 +148,9 @@ export const DynamicTable = (props) => {
 
   return (
     <div style={{ margin: 50 }}>
+      <p style={{ fontSize: 32, padding: 8, fontStyle: "oblique", fontWeight: "bold", textAlign: "center" }}>
+        {props.tableTitle}
+      </p>
       {(props.filter === true) &&
         <div>
           <Tooltip title="Search">
