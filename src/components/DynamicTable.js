@@ -4,73 +4,50 @@ import { Button, Drawer, Table, Tooltip } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { DynamicForm } from "./DynamicForm";
-import action from "../store/Actions"
-import _ from "lodash";
+import action from "../store/Actions";
+import TableSorter from "./table_components/TableSorter";
+import TableFilter from "./table_components/TableFilter";
+import DrawerFields from "./table_components/DrawerFields";
+import TableColumns from "./table_components/TableColumns";
 
 export const DynamicTable = (props) => {
-  const [visible, setVisible] = useState(false);
-  const [listData, setListData] = useState([]);
-  const [columnsData, setColumnsData] = useState([]);
-  const [currPage, setcurrPage] = useState(1);
-  const [pageSize, setpageSize] = useState(25);
-  const [total, settotal] = useState((props.list && props.list.length) || 25);
-  const [fields, setFields] = useState();
-  const [filterStr, setFilterStr] = useState("");
-  const [sortStr, setSortStr] = useState('');
+  const [visible, setVisible] = useState(false); //Drawer Visibility
+  const [listData, setListData] = useState([]); //Filtered list data
+  const [columnsData, setColumnsData] = useState([]); //Column Data with Sorter Function
+  const [currPage, setcurrPage] = useState(1); //Pagination - Current Page
+  const [pageSize, setpageSize] = useState(25); //Pagination - No. of rows per Page
+  const [total, settotal] = useState((props.list && props.list.length) || 25); //Pagination - Toatal no. of rows in List
+  const [fields, setFields] = useState(); //Column Fields to be passed to DynamicForm for Drawer form
+  const [filterStr, setFilterStr] = useState(""); //String carring field and value to be passed in API call for Filtering
+  const [sortStr, setSortStr] = useState(""); //String carring '+'/'-' and field name to be passed in API call for Sortering
   const dispatch = useDispatch();
 
   //Action Dispatch
   useEffect(() => {
-    props.apiEndPoint !== `` && dispatch(action.getList(props.apiEndPoint, props.headers));
-  }, [dispatch, props.apiEndPoint, props.headers])
+    props.apiEndPoint !== `` &&
+      dispatch(action.getList(props.apiEndPoint, props.headers));
+  }, [dispatch, props.apiEndPoint, props.headers]);
 
   //Fetching data from store
-  const list = useSelector(state => state.getList.list) || props.list;
-  const meta = useSelector(state => state.getList.meta);
-  const loading = useSelector(state => state.getList.loading);
+  const list = useSelector((state) => state.getList.list) || props.list;
+  const meta = useSelector((state) => state.getList.meta);
+  const loading = useSelector((state) => state.getList.loading);
 
   const showDrawer = () => {
-    setVisible(true);     //to open drawer
+    setVisible(true); //to open drawer
   };
-
   const onClose = () => {
-    setVisible(false);    //to close drawer
+    setVisible(false); //to close drawer
   };
 
-  //Creating fields for drawer
   useEffect(() => {
-    const tempFields = [];
-    props.columns.map((col) => {
-      return tempFields.push({
-        type: col.fieldType,
-        name: col.dataIndex,
-        label: col.title,
-      });
-    });
-    setFields(tempFields);
-    const tempColumns = [];
-    props.columns.map((col, i) => {
-      if (col.sorter) {
-        return tempColumns.push({
-          title: col.title,
-          dataIndex: col.dataIndex,
-          fieldType: col.fieldType,
-          sorter: (col.fieldType === "number") ?
-            (a, b) => a[col.dataIndex] - b[col.dataIndex] :
-            (a, b) => a[col.dataIndex].length - b[col.dataIndex].length
-        });
-      } else {
-        return tempColumns.push({
-          title: col.title,
-          dataIndex: col.dataIndex,
-          fieldType: col.fieldType,
-        });
-      }
-    });
-    setColumnsData(tempColumns);
+    //Creating fields for drawer to be passed to Dynamic Component
+    setFields(DrawerFields(props.columns));
+    //Updating Columns Sorter if sorter is true to State
+    setColumnsData(TableColumns(props.columns, props.sorter));
   }, [props.columns, props.sorter]);
 
-  //Fetch List from Server Setup to State
+  //Setting up ListData with Fetch List from Server if props.list is not passed/empty
   useEffect(() => {
     props.list ? setListData(props.list) : setListData(list);
   }, [list, props.list]);
@@ -78,83 +55,104 @@ export const DynamicTable = (props) => {
   //Server-Pagination Setup to State
   useEffect(() => {
     if (props.serverPagination && meta.pagination) {
+      //Setting up Pagination with meta if fetched from server
       setcurrPage(meta.pagination.current_page);
       setpageSize(meta.pagination.per_page);
-      settotal(meta.pagination.total)
+      settotal(meta.pagination.total);
     } else if (list) {
-      settotal(list.length);//Pagination Setup to State
+      //Setting total count if meta is null or props.serverPagination is false
+      settotal(list.length);
     } else {
+      //default if list & meta is null
       settotal(0);
     }
   }, [props.serverPagination, meta, list]);
 
-  //Handles Filter/Search 
+  //Handles Filter/Search
+
   const onFilter = (values) => {
-    //Local Filter
-    if (props.serverFilter === false) {
-      let filteredData = [...list];
-      _.map(values, (value, key) => {
-        if (value) {
-          // eslint-disable-next-line eqeqeq
-          const tempData = filteredData.filter((data) => data[key] == value);
-          filteredData = [...tempData];
-        }
-      });
-      // console.log("Local Filter");
-      setListData(filteredData);
-      onClose();
-    }
-    //Server Filter
-    else {
-      setFilterStr("");
-      let searchStr = '';
-      _.map(values, (value, key) => {
-        if (value) {
-          searchStr = searchStr + '&' + key + '=' + value.replace(' ', '_');
-        }
-      });
-      setFilterStr(searchStr);
-      dispatch(action.getList(props.apiEndPoint + '?page=1' + sortStr + searchStr, props.headers));
-      // console.log("Server Filter");
-      onClose();
-    }
+    let filteredData = [...list];
+    let returnedValue = TableFilter(props.serverFilter, values, filteredData);
+    props.serverFilter && dispatch(
+      action.getList(
+        props.apiEndPoint + "?page=1" + sortStr + returnedValue,
+        props.headers
+      )
+    )
+      ? setFilterStr(returnedValue)
+      : setListData(returnedValue);
+    onClose();
   };
 
   //On Change in Table of Pagination and Sorter
   const onTableChange = (pagination, filter, sorter) => {
+    //Setting up table change to state
     setcurrPage(pagination.current);
     setpageSize(pagination.pageSize);
     settotal(pagination.total);
-    // Setup sorter
-    var sort = ''
+    //Setup sorter string if props.serverSorter is true
+    var sort = "";
     if (sorter && props.serverSorter) {
-      if (sorter.order === "ascend") {
-        sort = '&sort=+' + sorter.field;
-      } else if (sorter.order === "descend") {
-        sort = '&sort=-' + sorter.field;
-      } else {
-        sort = '';
-      }
+      sort = TableSorter(sorter, sort);
     }
     setSortStr(sort);
-    if (filterStr !== "") {     //Filter Check
-      dispatch(action.getList(props.apiEndPoint + '?page=' + (pagination.current || 1) + sort + filterStr, props.headers));
-    } else if (sort !== '') {   //Sorter Check
-      dispatch(action.getList(props.apiEndPoint + '?page=' + (pagination.current || 1) + sort, props.headers));
-    } else {                    //Pagination Check
-      props.serverPagination && dispatch(action.getList(props.apiEndPoint + '?page=' + (pagination.current || 1), props.headers));
+    if (filterStr !== "") {
+      //Filter Check
+      dispatch(
+        action.getList(
+          props.apiEndPoint +
+            "?page=" +
+            (pagination.current || 1) +
+            sort +
+            filterStr,
+          props.headers
+        )
+      );
+    } else if (sort !== "") {
+      //Sorter Check
+      dispatch(
+        action.getList(
+          props.apiEndPoint + "?page=" + (pagination.current || 1) + sort,
+          props.headers
+        )
+      );
+    } else {
+      //Pagination Check
+      props.serverPagination &&
+        dispatch(
+          action.getList(
+            props.apiEndPoint + "?page=" + (pagination.current || 1),
+            props.headers
+          )
+        );
     }
   };
 
   return (
     <div style={{ margin: 50 }}>
-      <p style={{ fontSize: 32, padding: 8, fontStyle: "oblique", fontWeight: "bold", textAlign: "center" }}>
+      {/* Table Title */}
+      <p
+        style={{
+          fontSize: 32,
+          padding: 8,
+          fontStyle: "oblique",
+          fontWeight: "bold",
+          textAlign: "center",
+        }}
+      >
         {props.tableTitle}
       </p>
-      {(props.filter === true) &&
+      {/* Filter Check - to display search button & drawer or not */}
+      {props.filter === true && (
         <div>
           <Tooltip title="Search">
-            <Button type="primary" shape="circle" icon={<SearchOutlined />} onClick={showDrawer} style={{ float: "right", marginBottom: 10 }} />
+            <Button
+              type="primary"
+              shape="circle"
+              icon={<SearchOutlined />}
+              onClick={showDrawer}
+              style={{ float: "right", marginBottom: 10 }}
+            />
           </Tooltip>
           <Drawer
             title="Search"
@@ -166,8 +164,11 @@ export const DynamicTable = (props) => {
           >
             <DynamicForm data={fields} onSubmit={onFilter} />
           </Drawer>
-        </div>}
-      <br /><br />
+        </div>
+      )}
+      <br />
+      <br />
+      {/* Table Creation */}
       <Table
         columns={columnsData}
         dataSource={listData}
@@ -178,13 +179,16 @@ export const DynamicTable = (props) => {
         pagination={
           props.pagination === true
             ? {
-              current: currPage,
-              pageSize: pageSize,
-              offset: 0,
-              total: total
-            } : false}
+                current: currPage,
+                pageSize: pageSize,
+                offset: 0,
+                total: total,
+              }
+            : false
+        }
       />
-      <br /><br />
+      <br />
+      <br />
     </div>
   );
 };

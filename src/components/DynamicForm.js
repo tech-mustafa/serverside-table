@@ -11,13 +11,13 @@ export const DynamicForm = (props) => {
 
     const getField = (field) => {
         switch (field.type) {
-            case "formName":
+            case "formName"://Form Title
                 return (
                     <h4 style={{ fontSize: 30, padding: 15, fontStyle: "oblique", fontWeight: "bold", textAlign: "center" }}>
                         {field.value}
                     </h4>
                 );
-            case "header":
+            case "header"://Section Headers
                 return (
                     <Form.Item>
                         <span style={{ color: "blue", fontSize: 20, fontStyle: "bold", borderBottom: "2px solid #bbb" }}>
@@ -25,7 +25,7 @@ export const DynamicForm = (props) => {
                         </span>
                     </Form.Item>
                 );
-            case "text":
+            case "text"://Text Field
                 return (
                     <Form.Item
                         name={field.name}
@@ -47,7 +47,7 @@ export const DynamicForm = (props) => {
                         />
                     </Form.Item>
                 );
-            case "date":
+            case "date"://Date Field
                 return (
                     <Form.Item
                         name={field.name}
@@ -67,7 +67,7 @@ export const DynamicForm = (props) => {
                         />
                     </Form.Item>
                 );
-            case "age":
+            case "age"://Age Dropdown
                 return (
                     <Form.Item
                         name={field.name}
@@ -88,7 +88,7 @@ export const DynamicForm = (props) => {
                         />
                     </Form.Item>
                 );
-            case "number":
+            case "number"://Number Field
                 return (
                     <Form.Item
                         name={field.name}
@@ -112,7 +112,7 @@ export const DynamicForm = (props) => {
                         />
                     </Form.Item>
                 );
-            case "matchInput":
+            case "matchInput"://Compare field input to other input field's value
                 return (
                     <Form.Item
                         name={field.name}
@@ -145,7 +145,7 @@ export const DynamicForm = (props) => {
                         />
                     </Form.Item>
                 );
-            case "option":
+            case "option"://Dropdown Field
                 return (
                     <Form.Item
                         name={field.name}
@@ -164,7 +164,7 @@ export const DynamicForm = (props) => {
                         </Select>
                     </Form.Item>
                 );
-            case "radio":
+            case "radio"://Radio Field
                 return (
                     <Form.Item
                         name={field.name}
@@ -183,7 +183,7 @@ export const DynamicForm = (props) => {
                         </Radio.Group>
                     </Form.Item>
                 );
-            case "contact":
+            case "contact"://Contact Field
                 return (
                     <Form.Item
                         name={field.name}
@@ -207,7 +207,7 @@ export const DynamicForm = (props) => {
                         />
                     </Form.Item>
                 );
-            case "email":
+            case "email"://Mail Address Field
                 return (
                     <Form.Item
                         name={field.name}
@@ -229,7 +229,7 @@ export const DynamicForm = (props) => {
                         />
                     </Form.Item>
                 );
-            case "upload":
+            case "upload"://Upload Field
                 return (
                     <Form.Item
                         label={field.label}
@@ -251,7 +251,7 @@ export const DynamicForm = (props) => {
                         </Form.Item>
                     </Form.Item>
                 );
-            case "checkbox":
+            case "checkbox"://Checkbox Field
                 return (
                     <Form.Item
                         name={field.name}
@@ -269,7 +269,7 @@ export const DynamicForm = (props) => {
         }
     };
 
-    const normFile = (e) => {
+    const normFile = (e) => {                                   //handles file Uplaods
         console.log('Upload event:', e);
         if (Array.isArray(e)) {
             return e;
@@ -277,12 +277,12 @@ export const DynamicForm = (props) => {
         return e && e.fileList;
     };
 
-    const onFinish = (values) => {
+    const onFinish = (values) => {                              //Handles Form Submit
         props.onSubmit(values);
         console.log('Received values of form: ', values);
     };
 
-    const onReset = () => {
+    const onReset = () => {                                     //Handles Form Reset
         form.resetFields();
       };
 

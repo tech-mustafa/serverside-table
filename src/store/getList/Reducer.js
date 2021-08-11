@@ -14,7 +14,7 @@ const reducer = (state = initialState, action) => {
     // console.log("stataInitialData: ", state);
     switch (action.type) {
         case GET_LIST_REQUESTED:
-            //console.log('In GetLISTRequested: ', payload);
+            //console.log('In GetLISTRequested: ', action.payload);
             return ({
                 ...state,
                 loading: true,
@@ -28,7 +28,7 @@ const reducer = (state = initialState, action) => {
                 loading: false,
             });
         case GET_LIST_FAILED:
-            //console.log('In GetLISTFailed: ', payload);
+            //console.log('In GetLISTFailed: ', action.payload);
             return ({
                 ...state,
                 loading: false,

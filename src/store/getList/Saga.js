@@ -3,7 +3,7 @@ import { getListDispatcher } from './Action';
 
 // const apiUrl = `https://demo-be.profitley.com/api/v1/e-commerce/shop/products-list`;
 
-function getApi(api, header) {
+function getApi(api, header) {//Function to call and fetch API with given apiEndPoint & Header
    return fetch(api, {
       method: 'GET',
       headers: header
@@ -14,10 +14,9 @@ function getApi(api, header) {
 
 function* fetchList({ apiEndPoint, headers }) {
    try {
-      const list = yield call(getApi, apiEndPoint, headers);
+      const list = yield call(getApi, apiEndPoint, headers);//saga call with passed endpoint and heders
       console.log('apiEndPoint: ', apiEndPoint);
-      // console.log("listSaga fetchList: ", list);
-      const data = list.success;
+      const data = list.success; //setting success to be passed to reducer
       yield put(getListDispatcher({ data }));
    } catch (e) {
       yield put(getListDispatcher({}));
@@ -25,7 +24,7 @@ function* fetchList({ apiEndPoint, headers }) {
 }
 
 function* listSaga() {
-   yield takeEvery('GET_LIST_REQUESTED', fetchList);
+   yield takeEvery('GET_LIST_REQUESTED', fetchList);//Checks for Request Action and calls fetchList if founds one
 }
 
 export default listSaga;
