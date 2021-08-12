@@ -6,9 +6,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { DynamicForm } from "./DynamicForm";
 import action from "../store/Actions";
 import TableSorter from "./table_components/TableSorter";
-import TableFilter from "./table_components/TableFilter";
+import LocalFilter from "./table_components/LocalFilter";
 import DrawerFields from "./table_components/DrawerFields";
 import TableColumns from "./table_components/TableColumns";
+import ServerFilter from "./table_components/ServerFilter";
 
 export const DynamicTable = (props) => {
   const [visible, setVisible] = useState(false); //Drawer Visibility
@@ -22,13 +23,17 @@ export const DynamicTable = (props) => {
   const [sortStr, setSortStr] = useState(""); //String carring '+'/'-' and field name to be passed in API call for Sortering
   const dispatch = useDispatch();
 
-  //Action Dispatch
+  /**
+   * Dispatches Action with ApiEndPoint and Headers
+   */
   useEffect(() => {
     props.apiEndPoint !== `` &&
       dispatch(action.getList(props.apiEndPoint, props.headers));
   }, [dispatch, props.apiEndPoint, props.headers]);
 
-  //Fetching data from store
+  /**
+   * Fetching data from store
+   */
   const list = useSelector((state) => state.getList.list) || props.list;
   const meta = useSelector((state) => state.getList.meta);
   const loading = useSelector((state) => state.getList.loading);
@@ -47,12 +52,16 @@ export const DynamicTable = (props) => {
     setColumnsData(TableColumns(props.columns, props.sorter));
   }, [props.columns, props.sorter]);
 
-  //Setting up ListData with Fetch List from Server if props.list is not passed/empty
+  /**
+   * Setting up ListData with Fetch List from Server if props.list is not passed/empty
+   */
   useEffect(() => {
     props.list ? setListData(props.list) : setListData(list);
   }, [list, props.list]);
 
-  //Server-Pagination Setup to State
+  /**
+   * Server-Pagination Setup to State
+   */
   useEffect(() => {
     if (props.serverPagination && meta.pagination) {
       //Setting up Pagination with meta if fetched from server
@@ -68,23 +77,33 @@ export const DynamicTable = (props) => {
     }
   }, [props.serverPagination, meta, list]);
 
-  //Handles Filter/Search
-
+  /**
+   * Handles Filter or Search by calling LocalFilter & ServerFilter based on condition and and Set Values to State then Closes drawer
+   * @param values: Containing Array of Inputs in Drawer 
+   */
   const onFilter = (values) => {
     let filteredData = [...list];
-    let returnedValue = TableFilter(props.serverFilter, values, filteredData);
-    props.serverFilter && dispatch(
+    props.serverFilter &&
+    dispatch(
       action.getList(
-        props.apiEndPoint + "?page=1" + sortStr + returnedValue,
+        props.apiEndPoint +
+          "?page=1" +
+          sortStr +
+          ServerFilter(values),
         props.headers
       )
     )
-      ? setFilterStr(returnedValue)
-      : setListData(returnedValue);
+      ? setFilterStr(ServerFilter(values))
+      : setListData(LocalFilter(values, filteredData));
     onClose();
   };
 
-  //On Change in Table of Pagination and Sorter
+  /**
+   * Dispatches Action on Change in Table Pagination or Sorter and Set Values to State
+   * @param pagination: Contains array of objects of antd table's pagination
+   * @param filter: Contains array of objects of antd table's filter
+   * @param sorter: Contains array of objects of antd table's sorter
+   */
   const onTableChange = (pagination, filter, sorter) => {
     //Setting up table change to state
     setcurrPage(pagination.current);

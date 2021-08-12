@@ -3,7 +3,9 @@ import { DynamicTable } from "./components/DynamicTable";
 // import list from "./utils/TempData.json";
 
 const columns = [
-  //Columns Needed in Table
+  /**
+   * Columns Needed in Table
+   */
   {
     title: "ID", //column title
     dataIndex: "id", //object key to fetch data from response

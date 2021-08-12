@@ -1,3 +1,9 @@
+/**
+ * Adds Sorter Function to Columns with sorter value true 
+ * @param columns: Object containing columns properties
+ * @param sorter: Contains array of objects of antd table's sorter
+ * @returns {Array}
+ */
 const TableColumns = (columns, sorter) => {
   const tempColumns = [];
   columns.map((col, i) => {
